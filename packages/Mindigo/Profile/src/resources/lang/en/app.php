@@ -1,0 +1,111 @@
+<?php
+
+return [
+    'page_title' => 'My Account - LearnSphere',
+    'dashboard' => 'Dashboard',
+    'my_account' => 'My Account',
+    'back_to_dashboard' => 'Back to dashboard',
+
+    'save_changes' => 'Save changes',
+    'save_settings' => 'Save settings',
+    'update_password' => 'Update password',
+
+    'profile' => 'Profile',
+    'email_settings' => 'Notifications',
+    'security' => 'Security',
+
+    'active' => 'Active',
+    'inactive' => 'Suspended',
+    'none' => 'Not set',
+    'verified' => 'Verified',
+    'not_verified' => 'Not verified',
+
+    'role_profile_title' => 'Role-based profile workspace',
+    'scope' => 'Scope',
+
+    // Role profile (label / summary / scope items)
+    'role_admin_label' => 'Administrator',
+    'role_admin_summary' => 'Manage system operations, accounts, exam content and security settings.',
+    'role_admin_item_1' => 'User management',
+    'role_admin_item_2' => 'Operations monitoring',
+    'role_admin_item_3' => 'System configuration',
+
+    'role_teacher_label' => 'Teacher',
+    'role_teacher_summary' => 'Manage learning materials, question bank, exams and track student results.',
+    'role_teacher_item_1' => 'Question bank',
+    'role_teacher_item_2' => 'Assigned exams',
+    'role_teacher_item_3' => 'Student results',
+
+    'role_student_label' => 'Student',
+    'role_student_summary' => 'Track study profile, practice schedule, exam results and new notifications.',
+    'role_student_item_1' => 'Study path',
+    'role_student_item_2' => 'Attempt history',
+    'role_student_item_3' => 'Study notifications',
+
+    'phone' => 'Phone',
+    'joined_at' => 'Joined',
+    'email_status' => 'Email status',
+
+    'basic_information' => 'Personal information',
+    'basic_information_desc' => 'This shared profile is used across the system and adapts to the current role.',
+    'full_name' => 'Full name',
+    'registered_email' => 'Login email',
+    'date_of_birth' => 'Date of birth',
+    'gender' => 'Gender',
+    'select_gender' => 'Select gender',
+    'address' => 'Address',
+    'bio' => 'Bio',
+
+    'enter_full_name' => 'Enter full name...',
+    'enter_address' => 'Enter address...',
+    'phone_placeholder' => '0xxxxxxxxx or +84xxxxxxxxx',
+    'bio_placeholder' => 'Write briefly about your role, experience, or learning goals...',
+
+    'male' => 'Male',
+    'female' => 'Female',
+    'other' => 'Other',
+
+    'email_notification_settings' => 'Notification settings',
+    'email_notification_desc' => 'Choose which system notifications are sent to your account.',
+    'notif_new_quiz' => 'New exams and practice sets',
+    'notif_new_quiz_desc' => 'Get notified when new exams, practice sets, or learning content are available for your role.',
+    'notif_system_news' => 'System news and updates',
+    'notif_system_news_desc' => 'Get notified about maintenance, upgrades, policy changes, or important updates.',
+
+    'notif_calendar_updates' => 'Calendar changes',
+    'notif_calendar_updates_desc' => 'Get notified when a class is scheduled, rescheduled, or cancelled.',
+    'notif_calendar_reminders' => 'Learning reminders',
+    'notif_calendar_reminders_desc' => 'Get reminders before classes, assignment deadlines, and exams.',
+
+    'change_password' => 'Change password',
+    'change_password_desc' => 'Use a strong password to protect your account and system access.',
+    'current_password' => 'Current password',
+    'new_password' => 'New password',
+    'confirm_password' => 'Confirm password',
+
+    'danger_zone' => 'Danger zone',
+    'danger_zone_desc' => 'These actions directly affect account access.',
+    'suspend_account' => 'Suspend account',
+    'suspend_account_desc' => 'Temporarily disable access and sign out of the system.',
+    'suspend' => 'Suspend',
+    'delete_account' => 'Delete account',
+    'delete_account_desc' => 'This action cannot be undone. Account data will be permanently deleted.',
+    'messages' => [
+        'profile_updated' => 'Profile updated successfully.',
+        'notifications_updated' => 'Notification settings updated.',
+        'password_updated' => 'Password updated successfully.',
+        'account_suspended' => 'Your account has been suspended.',
+        'account_deleted' => 'Your account has been permanently deleted.',
+        'invalid_image' => 'Please select a valid image file.',
+        'image_too_large' => 'Image must not exceed 2MB.',
+        'delete_title' => 'Delete account?',
+        'delete_message' => 'This action cannot be undone. Account data will be permanently deleted.',
+        'delete_confirm' => 'Delete now',
+        'suspend_title' => 'Suspend account?',
+        'suspend_message' => 'The account will be suspended and signed out immediately.',
+        'suspend_confirm' => 'Suspend',
+        'cancel' => 'Cancel',
+        'deleting' => 'Processing account deletion...',
+        'processing' => 'Processing...',
+    ],
+];

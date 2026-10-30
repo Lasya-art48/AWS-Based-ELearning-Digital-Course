@@ -1,0 +1,59 @@
+import '../../../../Core/src/resources/js/mindigo-ui.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const messages = window.__auditLogMessages || {};
+    const filterForm = document.querySelector('[data-audit-log-filter]');
+
+    if (filterForm) {
+        const keywordInput = filterForm.querySelector('[name="keyword"]');
+        const instantFields = filterForm.querySelectorAll('select, input[type="date"]');
+
+        instantFields.forEach((field) => {
+            field.addEventListener('change', () => filterForm.requestSubmit());
+        });
+
+        keywordInput?.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            keywordInput.value = '';
+            filterForm.requestSubmit();
+        });
+    }
+
+    document.querySelectorAll('[data-audit-copy]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const target = document.querySelector(button.dataset.auditCopy);
+            const text = target?.textContent?.trim();
+
+            if (!text) {
+                MindigoToast(messages.empty_copy || 'There is no data to copy.', 'info');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                MindigoToast(messages.copied || 'Data copied.', 'success', 1800);
+            } catch {
+                MindigoToast(messages.copy_denied || 'The browser blocked automatic copying.', 'warning');
+            }
+        });
+    });
+
+    highlightChangedJsonBlocks();
+});
+
+function highlightChangedJsonBlocks() {
+    const oldBlock = document.querySelector('[data-audit-json="old"]');
+    const newBlock = document.querySelector('[data-audit-json="new"]');
+
+    if (!oldBlock || !newBlock) {
+        return;
+    }
+
+    if (oldBlock.textContent?.trim() !== newBlock.textContent?.trim()) {
+        oldBlock.classList.add('audit-log-diff-changed');
+        newBlock.classList.add('audit-log-diff-changed');
+    }
+}

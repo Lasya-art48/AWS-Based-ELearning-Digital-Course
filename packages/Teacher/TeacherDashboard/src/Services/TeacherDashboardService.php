@@ -1,0 +1,277 @@
+<?php
+
+namespace Mindigo\TeacherDashboard\Services;
+
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Mindigo\AcademicCalendar\Data\CalendarQuery;
+use Mindigo\AcademicCalendar\Enums\CalendarEventKind;
+use Mindigo\AcademicCalendar\Enums\CalendarEventStatus;
+use Mindigo\AcademicCalendar\Services\AcademicCalendarService;
+use Mindigo\Auth\Models\User;
+use Mindigo\ExamManagement\Models\Exam;
+use Mindigo\ExamManagement\Models\ExamAttempt;
+use Mindigo\ExamManagement\Models\ExamSession;
+use Mindigo\ExamManagement\Models\ExamSessionAttempt;
+use Mindigo\ExamManagement\Models\ExamTemplate;
+use Mindigo\ExamManagement\Services\ExamConvergenceService;
+use Mindigo\QuestionBank\Models\Question;
+use Mindigo\TeacherAssignment\Models\Assignment;
+use Mindigo\TeacherAssignment\Models\AssignmentSubmission;
+use Mindigo\TeacherClassroom\Models\Classroom;
+
+class TeacherDashboardService
+{
+    public function __construct(private readonly AcademicCalendarService $calendar, private readonly ExamConvergenceService $examConvergence) {}
+
+    public function getCalendarSnapshot(User $teacher, ?CarbonImmutable $anchor = null): array
+    {
+        $anchor ??= CarbonImmutable::now(config('app.timezone'));
+        $gridStart = $anchor->startOfMonth()->startOfWeek();
+        $gridEnd = $gridStart->addDays(42);
+        $events = $this->calendar->events(new CalendarQuery(
+            viewer: $teacher,
+            from: $gridStart,
+            to: $gridEnd,
+            timezone: config('app.timezone', 'Asia/Ho_Chi_Minh'),
+        ));
+        $activeEvents = $events->reject(fn ($event) => $event->status === CalendarEventStatus::Cancelled);
+        $todayEvents = $activeEvents
+            ->filter(fn ($event) => $event->startsAt->isSameDay($anchor))
+            ->sortBy('startsAt')
+            ->values();
+
+        return [
+            'anchor' => $anchor,
+            'days' => collect(range(0, 41))->map(fn (int $offset) => $gridStart->addDays($offset)),
+            'eventsByDay' => $activeEvents->groupBy(fn ($event) => $event->startsAt->toDateString()),
+            'todayEvents' => $todayEvents,
+            'todayClassCount' => $todayEvents->where('kind', CalendarEventKind::ClassSession)->count(),
+            'monthEventCount' => $activeEvents->filter(fn ($event) => $event->startsAt->month === $anchor->month)->count(),
+        ];
+    }
+
+    public function getStats(User $teacher): array
+    {
+        $totalClassrooms = Classroom::where('teacher_id', $teacher->id)->count();
+
+        $totalStudents = DB::table('classroom_students')
+            ->join('classrooms', 'classrooms.id', '=', 'classroom_students.classroom_id')
+            ->where('classrooms.teacher_id', $teacher->id)
+            ->whereNull('classrooms.deleted_at')
+            ->where('classroom_students.status', 'active')
+            ->distinct('classroom_students.student_id')
+            ->count('classroom_students.student_id');
+
+        if ($this->examConvergence->enabled($teacher)) {
+            $totalExams = ExamSession::query()->where('organizer_id', $teacher->id)->count();
+            $publishedExams = ExamSession::query()->where('organizer_id', $teacher->id)->whereIn('status', [ExamSession::STATUS_SCHEDULED, ExamSession::STATUS_LIVE])->count();
+            $draftExams = ExamTemplate::query()->where('owner_id', $teacher->id)->where('status', ExamTemplate::STATUS_DRAFT)->count();
+            $totalAttempts = ExamSessionAttempt::query()->whereHas('session', fn ($query) => $query->where('organizer_id', $teacher->id))->whereNotNull('submitted_at')->count();
+            $passedAttempts = ExamSessionAttempt::query()->whereHas('session', fn ($query) => $query->where('organizer_id', $teacher->id))->whereNotNull('submitted_at')->where('passed', true)->count();
+        } else {
+            $totalExams = Exam::where('created_by', $teacher->id)->count();
+            $publishedExams = Exam::where('created_by', $teacher->id)->where('status', 'published')->count();
+            $draftExams = Exam::where('created_by', $teacher->id)->where('status', 'draft')->count();
+            $totalAttempts = ExamAttempt::whereHas('exam', fn ($q) => $q->where('created_by', $teacher->id))->where('status', 'submitted')->count();
+            $passedAttempts = ExamAttempt::whereHas('exam', fn ($q) => $q->where('created_by', $teacher->id))->where('status', 'submitted')->where('passed', true)->count();
+        }
+
+        $totalQuestions = Question::where('created_by', $teacher->id)->count();
+        $pendingQuestions = Question::where('created_by', $teacher->id)->where('status', 'reviewing')->count();
+
+        return compact(
+            'totalClassrooms', 'totalStudents',
+            'totalExams', 'publishedExams', 'draftExams',
+            'totalAttempts', 'passedAttempts',
+            'totalQuestions', 'pendingQuestions'
+        );
+    }
+
+    public function getAssignmentStats(User $teacher): array
+    {
+        $total = Assignment::where('teacher_id', $teacher->id)->count();
+        $published = Assignment::where('teacher_id', $teacher->id)->where('status', 'published')->count();
+        $draft = Assignment::where('teacher_id', $teacher->id)->where('status', 'draft')->count();
+        $pendingSubmissions = AssignmentSubmission::whereHas('assignment', fn ($q) => $q->where('teacher_id', $teacher->id))
+            ->whereNull('graded_at')
+            ->count();
+
+        return compact('total', 'published', 'draft', 'pendingSubmissions');
+    }
+
+    public function getRecentAssignments(User $teacher, int $limit = 4)
+    {
+        return Assignment::where('teacher_id', $teacher->id)
+            ->with(['classroom:id,name'])
+            ->withCount('submissions')
+            ->latest('created_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getRecentAssignmentSubmissions(User $teacher, int $limit = 5): Collection
+    {
+        return AssignmentSubmission::with(['assignment:id,title,teacher_id,classroom_id,max_score', 'assignment.classroom:id,name', 'student:id,name'])
+            ->whereHas('assignment', fn ($q) => $q->where('teacher_id', $teacher->id))
+            ->latest('submitted_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getMyClassrooms(User $teacher, int $limit = 5): Collection
+    {
+        return Classroom::where('teacher_id', $teacher->id)
+            ->withCount('students')
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getRecentExams(User $teacher, int $limit = 5): Collection
+    {
+        if ($this->examConvergence->enabled($teacher)) {
+            return ExamSession::query()->where('organizer_id', $teacher->id)->with('version.template')
+                ->withCount(['attempts' => fn ($query) => $query->whereNotNull('submitted_at')])
+                ->withAvg(['attempts' => fn ($query) => $query->whereNotNull('submitted_at')], 'percentage')
+                ->latest()->limit($limit)->get()->each(fn (ExamSession $session) => $session->setAttribute('subject', $session->version?->template?->subject));
+        }
+
+        return Exam::where('created_by', $teacher->id)
+            ->withCount(['attempts' => fn ($q) => $q->where('status', 'submitted')])
+            ->withAvg(['attempts' => fn ($q) => $q->where('status', 'submitted')], 'percentage')
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getRecentAttempts(User $teacher, int $limit = 8): Collection
+    {
+        if ($this->examConvergence->enabled($teacher)) {
+            return ExamSessionAttempt::query()->with(['session.version.template', 'user:id,name'])
+                ->whereHas('session', fn ($query) => $query->where('organizer_id', $teacher->id))
+                ->whereNotNull('submitted_at')->latest('submitted_at')->limit($limit)->get()
+                ->each(function (ExamSessionAttempt $attempt): void {
+                    $attempt->session?->setAttribute('subject', $attempt->session?->version?->template?->subject);
+                    $attempt->setRelation('exam', $attempt->session);
+                });
+        }
+
+        return ExamAttempt::with(['exam:id,title,subject', 'user:id,name'])
+            ->whereHas('exam', fn ($q) => $q->where('created_by', $teacher->id))
+            ->where('status', 'submitted')
+            ->latest('submitted_at')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getTopStudents(User $teacher, int $limit = 5): Collection
+    {
+        if ($this->examConvergence->enabled($teacher)) {
+            return DB::table('exam_session_attempts')->join('exam_sessions', 'exam_sessions.id', '=', 'exam_session_attempts.exam_session_id')
+                ->join('users', 'users.id', '=', 'exam_session_attempts.user_id')->where('exam_sessions.organizer_id', $teacher->id)
+                ->whereNotNull('exam_session_attempts.submitted_at')
+                ->selectRaw('users.id, users.name, COUNT(*) as attempt_count, ROUND(AVG(exam_session_attempts.percentage), 1) as avg_score')
+                ->groupBy('users.id', 'users.name')->orderByDesc('avg_score')->limit($limit)->get();
+        }
+
+        return DB::table('exam_attempts')
+            ->join('exams', 'exams.id', '=', 'exam_attempts.exam_id')
+            ->join('users', 'users.id', '=', 'exam_attempts.user_id')
+            ->where('exams.created_by', $teacher->id)
+            ->where('exam_attempts.status', 'submitted')
+            ->selectRaw('users.id, users.name, COUNT(*) as attempt_count, ROUND(AVG(exam_attempts.percentage), 1) as avg_score')
+            ->groupBy('users.id', 'users.name')
+            ->orderByDesc('avg_score')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getWeeklyTrend(User $teacher): array
+    {
+        $rows = $this->examConvergence->enabled($teacher)
+            ? ExamSessionAttempt::query()->whereHas('session', fn ($query) => $query->where('organizer_id', $teacher->id))->whereNotNull('submitted_at')->where('submitted_at', '>=', now()->subDays(6)->startOfDay())->selectRaw('DATE(submitted_at) as date, COUNT(*) as count')->groupBy('date')->orderBy('date')->get()->keyBy('date')
+            : ExamAttempt::whereHas('exam', fn ($q) => $q->where('created_by', $teacher->id))->where('status', 'submitted')->where('submitted_at', '>=', now()->subDays(6)->startOfDay())->selectRaw('DATE(submitted_at) as date, COUNT(*) as count')->groupBy('date')->orderBy('date')->get()->keyBy('date');
+
+        $labels = [];
+        $counts = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->toDateString();
+            $labels[] = now()->subDays($i)->locale(app()->getLocale())->isoFormat('dd');
+            $counts[] = $rows[$date]->count ?? 0;
+        }
+
+        return compact('labels', 'counts');
+    }
+
+    public function getUpcomingActivities(User $teacher, int $limit = 5): Collection
+    {
+        $assignments = Assignment::where('teacher_id', $teacher->id)
+            ->whereNotNull('due_date')
+            ->where('due_date', '>=', now()->startOfDay())
+            ->with('classroom:id,name')
+            ->orderBy('due_date')
+            ->limit($limit)
+            ->get()
+            ->map(fn ($assignment) => (object) [
+                'type' => 'assignment',
+                'title' => $assignment->title,
+                'subtitle' => $assignment->classroom?->name ?? __('teacher-dashboard::app.assignment_scope'),
+                'time' => $assignment->due_date,
+                'route' => Route::has('teacher.assignments.submissions.index')
+                    ? route('teacher.assignments.submissions.index', $assignment)
+                    : '#',
+            ]);
+
+        $examQuery = $this->examConvergence->enabled($teacher)
+            ? ExamSession::query()->where('organizer_id', $teacher->id)->with('version.template')
+            : Exam::query()->where('created_by', $teacher->id);
+        $exams = $examQuery->whereNotNull('starts_at')->where('starts_at', '>=', now()->startOfDay())->orderBy('starts_at')->limit($limit)->get()
+            ->map(fn ($exam) => (object) [
+                'type' => 'exam',
+                'title' => $exam->title,
+                'subtitle' => ($exam->subject ?? $exam->version?->template?->subject) ?: __('teacher-dashboard::app.exam_scope'),
+                'time' => $exam->starts_at,
+                'route' => $this->examConvergence->enabled($teacher) ? route('teacher.exam-sessions.index') : (Route::has('teacher.exams.show') ? route('teacher.exams.show', $exam) : '#'),
+            ]);
+
+        return $assignments
+            ->concat($exams)
+            ->sortBy('time')
+            ->take($limit)
+            ->values();
+    }
+
+    public function getPerformanceOverview(User $teacher): array
+    {
+        $rows = Classroom::where('teacher_id', $teacher->id)
+            ->withCount('students')
+            ->latest()
+            ->limit(5)
+            ->get(['id', 'name']);
+
+        $labels = [];
+        $averages = [];
+        $studentCounts = [];
+
+        foreach ($rows as $classroom) {
+            $labels[] = $classroom->name;
+            $studentCounts[] = (int) $classroom->students_count;
+
+            $studentIds = DB::table('classroom_students')
+                ->where('classroom_id', $classroom->id)
+                ->pluck('student_id');
+
+            $average = $this->examConvergence->enabled($teacher)
+                ? ExamSessionAttempt::query()->whereIn('user_id', $studentIds)->whereHas('session', fn ($query) => $query->where('organizer_id', $teacher->id))->whereNotNull('submitted_at')->avg('percentage')
+                : ExamAttempt::whereIn('user_id', $studentIds)->whereHas('exam', fn ($q) => $q->where('created_by', $teacher->id))->where('status', 'submitted')->avg('percentage');
+
+            $averages[] = $average ? round($average, 1) : 0;
+        }
+
+        return compact('labels', 'averages', 'studentCounts');
+    }
+}

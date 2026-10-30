@@ -1,0 +1,209 @@
+#  Mindigo LMS — docker-compose.yml
+#  Chạy đồng thời 4 container: app (PHP-FPM) + nginx + cơ sở dữ liệu (db) + phpMyAdmin.
+#  Nginx phục vụ static & proxy PHP tới app qua mạng nội bộ.
+
+services:
+
+  # Container ứng dụng (PHP-FPM) — chứa toàn bộ mã nguồn + assets đã build
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: ${APP_IMAGE:-mindigo-app}
+    container_name: mindigo_app
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      # Kết nối tới container db qua tên service "db" (DNS nội bộ của Docker)
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: mindigo
+      DB_USERNAME: mindigo
+      DB_PASSWORD: secret
+      LIVE_MEDIA_TOPOLOGY: ${LIVE_MEDIA_TOPOLOGY:-mesh}
+      LIVE_MEDIA_SFU_HEALTH_URL: ${LIVE_MEDIA_SFU_HEALTH_URL:-http://live-media-gateway:8091/health}
+      LIVE_MEDIA_GATEWAY_URL: ${LIVE_MEDIA_GATEWAY_URL:-ws://127.0.0.1:8090}
+      LIVE_MEDIA_GATEWAY_HEALTH_URL: ${LIVE_MEDIA_GATEWAY_HEALTH_URL:-http://live-media-gateway:8091/health}
+      LIVE_MEDIA_GATEWAY_SECRET: ${LIVE_MEDIA_GATEWAY_SECRET:-}
+      LIVE_MEDIA_GATEWAY_TICKET_TTL: ${LIVE_MEDIA_GATEWAY_TICKET_TTL:-120}
+      LIVE_MEDIA_GATEWAY_CONTROL_URL: http://live-media-gateway:8091
+      LIVE_MEDIA_STUN_URL: ${LIVE_MEDIA_STUN_URL:-}
+      LIVE_MEDIA_TURN_URLS: ${LIVE_MEDIA_TURN_URLS:-}
+      LIVE_MEDIA_TURN_FAILOVER_URLS: ${LIVE_MEDIA_TURN_FAILOVER_URLS:-}
+      LIVE_MEDIA_TURN_HEALTH_URL: ${LIVE_MEDIA_TURN_HEALTH_URL:-}
+      LIVE_MEDIA_TURN_FAILOVER_HEALTH_URL: ${LIVE_MEDIA_TURN_FAILOVER_HEALTH_URL:-}
+      LIVE_MEDIA_TURN_AUTH_SECRET: ${LIVE_MEDIA_TURN_AUTH_SECRET:-}
+      LIVE_MEDIA_TURN_REALM: ${LIVE_MEDIA_TURN_REALM:-mindigo.local}
+      LIVE_MEDIA_TURN_CREDENTIAL_TTL: ${LIVE_MEDIA_TURN_CREDENTIAL_TTL:-600}
+      LIVE_MEDIA_TURN_HEALTH_CACHE: ${LIVE_MEDIA_TURN_HEALTH_CACHE:-90}
+      LIVE_MEDIA_TURN_FAIL_OPEN: ${LIVE_MEDIA_TURN_FAIL_OPEN:-true}
+      LIVE_MEDIA_TURN_MAX_BITRATE_KBPS: ${LIVE_MEDIA_TURN_MAX_BITRATE_KBPS:-2500}
+      # Sync public sang volume dùng chung cho nginx
+      SHARED_PUBLIC_DIR: /shared/public
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Volume chứa file public để nginx đọc (app sync vào lúc khởi động)
+      - web_public:/shared
+      # Lưu bền vững file người dùng upload (bài nộp, ảnh...) trên disk "public"
+      - storage_data:/var/www/html/storage/app/public
+      - recording_data:/var/www/html/storage/app/private/server-recordings
+    networks:
+      - mindigo
+
+  # Container web server (Nginx) — reverse proxy + phục vụ static
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: ${WEB_IMAGE:-mindigo-nginx}
+    container_name: mindigo_web
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "8080:80"            # Truy cập web tại http://localhost:8080  (host:container)
+    volumes:
+      # Đọc mã nguồn public (đã được app sync) từ volume dùng chung
+      - web_public:/var/www/html/public
+    networks:
+      - mindigo
+
+  # Container cơ sở dữ liệu (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: mindigo_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: mindigo
+      MYSQL_USER: mindigo
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports:
+      - "3307:3306"          # Map ra host 3307 để không đụng MySQL/Laragon đang chạy 3306
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootsecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mindigo
+
+  # phpMyAdmin: xem/quản lý cơ sở dữ liệu qua trình duyệt (tiện demo)
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: mindigo_pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - mindigo
+
+# Volume bền vững (dữ liệu không mất khi container bị xoá)
+  live-redis:
+    image: redis:7.4-alpine
+    container_name: mindigo_live_redis
+    restart: unless-stopped
+    profiles: ["live-media"]
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - live_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - mindigo
+
+  live-media-gateway:
+    build:
+      context: ./services/live-media-gateway
+    container_name: mindigo_live_media_gateway
+    restart: unless-stopped
+    profiles: ["live-media"]
+    environment:
+      NODE_ENV: production
+      LIVE_MEDIA_GATEWAY_SECRET: ${LIVE_MEDIA_GATEWAY_SECRET}
+      LIVE_MEDIA_REDIS_URL: redis://live-redis:6379
+      LIVE_MEDIA_ANNOUNCED_IP: ${LIVE_MEDIA_ANNOUNCED_IP:-127.0.0.1}
+      LIVE_MEDIA_RTC_MIN_PORT: ${LIVE_MEDIA_RTC_MIN_PORT:-40000}
+      LIVE_MEDIA_RTC_MAX_PORT: ${LIVE_MEDIA_RTC_MAX_PORT:-40100}
+      LIVE_MEDIA_RECORDING_DIR: /recordings
+    depends_on:
+      live-redis:
+        condition: service_healthy
+    ports:
+      - "8090:8090"
+      - "8091:8091"
+      - "40000-40100:40000-40100/udp"
+    volumes:
+      - recording_data:/recordings
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8091/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mindigo
+
+  live-turn:
+    image: coturn/coturn:4.15.0-r0-alpine
+    container_name: mindigo_live_turn
+    restart: unless-stopped
+    profiles: ["live-media"]
+    command:
+      - -n
+      - --fingerprint
+      - --use-auth-secret
+      - --static-auth-secret=${LIVE_MEDIA_TURN_AUTH_SECRET}
+      - --realm=${LIVE_MEDIA_TURN_REALM:-mindigo.local}
+      - --external-ip=${LIVE_MEDIA_TURN_EXTERNAL_IP:-127.0.0.1}
+      - --min-port=${LIVE_MEDIA_TURN_MIN_PORT:-49160}
+      - --max-port=${LIVE_MEDIA_TURN_MAX_PORT:-49200}
+      - --max-bps=${LIVE_MEDIA_TURN_MAX_BPS:-312500}
+      - --bps-capacity=${LIVE_MEDIA_TURN_TOTAL_BPS:-50000000}
+      - --user-quota=${LIVE_MEDIA_TURN_USER_QUOTA:-4}
+      - --total-quota=${LIVE_MEDIA_TURN_TOTAL_QUOTA:-500}
+      - --no-multicast-peers
+      - --unauthorized-ratelimit
+      - --unauthorized-ratelimit-rps=10
+      - --stale-nonce
+      - --max-allocate-lifetime=600
+      - --no-tls
+      - --no-dtls
+      - --log-file=stdout
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "49160-49200:49160-49200/udp"
+    healthcheck:
+      test: ["CMD-SHELL", "turnutils_stunclient 127.0.0.1 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mindigo
+
+volumes:
+  live_redis_data:
+  recording_data:
+  db_data:        # dữ liệu MySQL
+  storage_data:   # file upload của ứng dụng
+  web_public:     # mã nguồn public cho nginx
+
+# Mạng nội bộ để các container "thấy" nhau qua tên service
+networks:
+  mindigo:
+    driver: bridge

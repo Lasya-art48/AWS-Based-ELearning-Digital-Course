@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'breadcrumb' => 'Breadcrumb', 'home' => 'Home', 'eyebrow' => 'Learning catalog', 'title' => 'Explore courses',
+    'subtitle' => 'Find verified courses from LearnSphere teachers, organized by subject, education level and learning goals.',
+    'search_label' => 'Search courses', 'search_placeholder' => 'Search by course, teacher, subject or category...',
+    'sort_label' => 'Sort courses', 'sorts' => ['newest' => 'Newest', 'popular' => 'Popular', 'rating' => 'Top rated', 'enrolled' => 'Most enrolled'],
+    'apply' => 'Apply', 'advanced_filters' => 'More filters', 'subject' => 'Subject', 'category' => 'Category',
+    'education_level' => 'Education level', 'difficulty' => 'Difficulty', 'all' => 'All',
+    'result_count' => '{0} No courses|{1} :count course|[2,*] :count courses', 'clear_filters' => 'Clear filters',
+    'empty_title' => 'No matching courses', 'empty_description' => 'Try changing the keyword or filters.', 'results' => 'Course results',
+    'access' => ['free' => 'Free', 'paid' => 'Paid'], 'free' => 'Free', 'minutes' => ':count min', 'duration' => 'Duration',
+    'duration_units' => ['minute' => ':count min', 'hour' => ':count hours', 'session' => ':count sessions', 'day' => ':count days', 'week' => ':count weeks'],
+    'lessons' => 'Lessons', 'rating' => 'Rating', 'students' => 'Students', 'view_detail' => 'View details',
+    'course_detail' => 'Course details', 'no_description' => 'This course has no description yet.',
+    'learning_outcomes' => 'What you will learn', 'requirements' => 'Requirements', 'target_learners' => 'Who this course is for',
+    'curriculum' => 'Course curriculum', 'curriculum_summary' => ':chapters chapters · :lessons lessons',
+    'lesson_count' => '{0} No lessons|{1} :count lesson|[2,*] :count lessons', 'curriculum_empty' => 'The curriculum is being prepared.',
+    'enrollment_phase_notice' => 'Enrollment will be available in the next phase.', 'instructor' => 'Instructor', 'instructor_default' => 'LearnSphere instructor',
+    'detail_subtitle' => 'Review the course overview, curriculum, and available preview lessons.',
+    'back_to_catalog' => 'Back to course catalog', 'back_to_course' => 'Back to course details',
+    'preview_mode' => 'Preview mode', 'preview' => 'Preview', 'preview_lesson' => 'Allow lesson preview',
+    'preview_lesson_help' => 'Authenticated learners can open this lesson before enrollment is available.',
+    'chapters' => 'Chapters', 'course_information' => 'Course information', 'language' => 'Language',
+    'starts_at' => 'Start date', 'schedule_days' => 'Study schedule', 'study_time' => 'Study time',
+    'attachments' => 'Lesson resources', 'attachment' => 'Attachment',
+];

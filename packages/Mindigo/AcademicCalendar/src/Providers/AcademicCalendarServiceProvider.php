@@ -1,0 +1,55 @@
+<?php
+
+namespace Mindigo\AcademicCalendar\Providers;
+
+use App\Console\Commands\AcademicCalendar\SendCalendarReminders;
+use Illuminate\Support\ServiceProvider;
+use Mindigo\AcademicCalendar\Adapters\AcademicExceptionAdapter;
+use Mindigo\AcademicCalendar\Adapters\AssignmentAdapter;
+use Mindigo\AcademicCalendar\Adapters\ClassroomScheduleAdapter;
+use Mindigo\AcademicCalendar\Adapters\ExamAdapter;
+use Mindigo\AcademicCalendar\Adapters\LiveSessionAdapter;
+use Mindigo\AcademicCalendar\Contracts\CalendarSourceAdapter;
+use Mindigo\AcademicCalendar\Models\AcademicCalendarException;
+use Mindigo\AcademicCalendar\Observers\AcademicCalendarAuditObserver;
+use Mindigo\AcademicCalendar\Observers\ClassroomScheduleObserver;
+use Mindigo\AcademicCalendar\Services\AcademicCalendarService;
+use Mindigo\TeacherClassroom\Models\Classroom;
+use Mindigo\TeacherClassroom\Models\ClassroomAttendance;
+use Mindigo\TeacherClassroom\Models\ClassroomSchedule;
+
+final class AcademicCalendarServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'academic-calendar');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'academic-calendar');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        Classroom::observe(AcademicCalendarAuditObserver::class);
+        ClassroomAttendance::observe(AcademicCalendarAuditObserver::class);
+        AcademicCalendarException::observe(AcademicCalendarAuditObserver::class);
+        ClassroomSchedule::observe(AcademicCalendarAuditObserver::class);
+        ClassroomSchedule::observe(ClassroomScheduleObserver::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SendCalendarReminders::class]);
+        }
+    }
+
+    public function register(): void
+    {
+        $adapters = [
+            AcademicExceptionAdapter::class,
+            ClassroomScheduleAdapter::class,
+            AssignmentAdapter::class,
+            ExamAdapter::class,
+            LiveSessionAdapter::class,
+        ];
+
+        $this->app->tag($adapters, CalendarSourceAdapter::class);
+        $this->app->singleton(
+            AcademicCalendarService::class,
+            fn ($app) => new AcademicCalendarService($app->tagged(CalendarSourceAdapter::class)),
+        );
+    }
+}

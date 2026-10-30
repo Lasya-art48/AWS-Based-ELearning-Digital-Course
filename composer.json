@@ -1,0 +1,332 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "LearnSphere LMS, a modular learning management system built with Laravel.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "blade-ui-kit/blade-heroicons": "^2.7",
+        "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.11",
+        "laravel/tinker": "^2.10.1",
+        "mindigo/audit-log": "*",
+        "mindigo/academic-calendar": "*",
+        "mindigo/auth": "*",
+        "mindigo/blog-management": "dev-main",
+        "mindigo/core": "*",
+        "mindigo/dashboard": "*",
+        "mindigo/exam-management": "*",
+        "mindigo/learning-tools": "*",
+        "mindigo/notification": "*",
+        "mindigo/profile": "*",
+        "mindigo/question-bank": "*",
+        "mindigo/report": "*",
+        "mindigo/role-permission": "*",
+        "mindigo/student-assignment": "*",
+        "mindigo/student-classroom": "*",
+        "mindigo/student-dashboard": "*",
+        "mindigo/student-discussion": "*",
+        "mindigo/student-exam": "*",
+        "mindigo/student-history": "*",
+        "mindigo/student-leaderboard": "*",
+        "mindigo/student-live-session": "*",
+        "mindigo/student-notebook": "*",
+        "mindigo/student-practice": "*",
+        "mindigo/student-progress": "*",
+        "mindigo/student-schedule": "*",
+        "mindigo/subject-management": "*",
+        "mindigo/support-management": "*",
+        "mindigo/system-setting": "*",
+        "mindigo/teacher-announcement": "*",
+        "mindigo/teacher-assignment": "*",
+        "mindigo/teacher-classroom": "*",
+        "mindigo/teacher-calendar": "*",
+        "mindigo/teacher-course": "*",
+        "mindigo/teacher-dashboard": "*",
+        "mindigo/teacher-discussion": "*",
+        "mindigo/teacher-exam": "*",
+        "mindigo/teacher-live-session": "*",
+        "mindigo/teacher-onboarding": "*",
+        "mindigo/teacher-question": "*",
+        "mindigo/teacher-result": "*",
+        "mindigo/user-management": "*",
+        "predis/predis": "^3.5",
+        "tijsverkoyen/css-to-inline-styles": "^2.4"
+    },
+    "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.7",
+        "fakerphp/faker": "^1.23",
+        "laravel/pail": "^1.2.2",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.41",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^11.5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Mindigo\\Auth\\": "packages/Mindigo/Auth/src/",
+            "Mindigo\\Notification\\": "packages/Mindigo/Notification/src/",
+            "Mindigo\\Core\\": "packages/Mindigo/Core/src/",
+            "Mindigo\\Dashboard\\": "packages/Mindigo/Dashboard/src/",
+            "Mindigo\\ExamManagement\\": "packages/Mindigo/ExamManagement/src/",
+            "Mindigo\\LearningTools\\": "packages/Mindigo/LearningTools/src/",
+            "Mindigo\\Profile\\": "packages/Mindigo/Profile/src/", 
+            "Mindigo\\QuestionBank\\": "packages/Mindigo/QuestionBank/src/",
+            "Mindigo\\RolePermission\\": "packages/Mindigo/RolePermission/src/",
+            "Mindigo\\SupportManagement\\": "packages/Mindigo/SupportManagement/src/",
+            "Mindigo\\UserManagement\\": "packages/Mindigo/UserManagement/src/",
+            "Mindigo\\BlogManagement\\": "packages/Mindigo/BlogManagement/src/",
+            "Mindigo\\SystemSetting\\": "packages/Mindigo/SystemSetting/src/",
+            "Mindigo\\AuditLog\\": "packages/Mindigo/AuditLog/src/",
+            "Mindigo\\AcademicCalendar\\": "packages/Mindigo/AcademicCalendar/src/",
+            "Mindigo\\Report\\": "packages/Mindigo/Report/src/",
+            "Mindigo\\SubjectManagement\\": "packages/Mindigo/SubjectManagement/src/",
+            "Mindigo\\TeacherDashboard\\": "packages/Teacher/TeacherDashboard/src/",
+            "Mindigo\\TeacherClassroom\\": "packages/Teacher/TeacherClassroom/src/",
+            "Mindigo\\TeacherCalendar\\": "packages/Teacher/TeacherCalendar/src/",
+            "Mindigo\\TeacherDiscussion\\": "packages/Teacher/TeacherDiscussion/src/",
+            "Mindigo\\TeacherExam\\": "packages/Teacher/TeacherExam/src/",
+            "Mindigo\\TeacherAnnouncement\\": "packages/Teacher/TeacherAnnouncement/src/",
+            "Mindigo\\TeacherAssignment\\": "packages/Teacher/TeacherAssignment/src/",
+            "Mindigo\\TeacherQuestion\\": "packages/Teacher/TeacherQuestion/src/",
+            "Mindigo\\TeacherResult\\": "packages/Teacher/TeacherResult/src/",
+            "Mindigo\\TeacherCourse\\": "packages/Teacher/TeacherCourse/src/",
+            "Mindigo\\TeacherOnboarding\\": "packages/Teacher/TeacherOnboarding/src/",
+            "Mindigo\\TeacherLiveSession\\": "packages/Teacher/TeacherLiveSession/src/",
+            "Mindigo\\StudentDashboard\\": "packages/Students/StudentDashboard/src/",
+            "Mindigo\\StudentClassroom\\": "packages/Students/StudentClassroom/src/",
+            "Mindigo\\StudentExam\\": "packages/Students/StudentExam/src/",
+            "Mindigo\\StudentAssignment\\": "packages/Students/StudentAssignment/src/",
+            "Mindigo\\StudentSchedule\\": "packages/Students/StudentSchedule/src/",
+            "Mindigo\\StudentProgress\\": "packages/Students/StudentProgress/src/",
+            "Mindigo\\StudentHistory\\": "packages/Students/StudentHistory/src/",
+            "Mindigo\\StudentNotebook\\": "packages/Students/StudentNotebook/src/",
+            "Mindigo\\StudentPractice\\": "packages/Students/StudentPractice/src/",
+            "Mindigo\\StudentLeaderboard\\": "packages/Students/StudentLeaderboard/src/",
+            "Mindigo\\StudentDiscussion\\": "packages/Students/StudentDiscussion/src/",
+            "Mindigo\\StudentLiveSession\\": "packages/Students/StudentLiveSession/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Auth"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Notification"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Core"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Dashboard"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/ExamManagement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/LearningTools"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Profile"
+        }, 
+        {
+            "type": "path",
+            "url": "packages/Mindigo/QuestionBank"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/RolePermission"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/SupportManagement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/UserManagement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/BlogManagement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/SystemSetting"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/AuditLog"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/AcademicCalendar"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/Report"
+        },
+        {
+            "type": "path",
+            "url": "packages/Mindigo/SubjectManagement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherDashboard"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherClassroom"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherCalendar"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherDiscussion"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherExam"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherAnnouncement"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherAssignment"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherQuestion"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherResult"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherCourse"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherOnboarding"
+        },
+        {
+            "type": "path",
+            "url": "packages/Teacher/TeacherLiveSession"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentDashboard"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentClassroom"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentExam"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentAssignment"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentSchedule"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentProgress"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentHistory"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentNotebook"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentPractice"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentLeaderboard"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentDiscussion"
+        },
+        {
+            "type": "path",
+            "url": "packages/Students/StudentLiveSession"
+        }
+    ],
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#22c55e\" \"php artisan serve\" \"php artisan queue:work --tries=1\" \"php artisan reverb:start\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,reverb,logs,vite"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

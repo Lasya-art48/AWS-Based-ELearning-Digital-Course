@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('web')->get('/lang/{locale}', function ($locale, Request $request) {
+    $supportedLocales = ['en'];
+
+    if (! in_array($locale, $supportedLocales, true)) {
+        return redirect()->route('home');
+    }
+
+    $request->session()->put('locale', $locale);
+
+    Cookie::queue('locale', $locale, 60 * 24 * 30);
+
+    $previous = url()->previous();
+    $previousHost = parse_url($previous, PHP_URL_HOST);
+    $currentHost = $request->getHost();
+
+    if (
+        blank($previous)
+        || ($previousHost && $previousHost !== $currentHost)
+        || str_contains($previous, '/lang/')
+    ) {
+        return redirect()->route('home');
+    }
+
+    return redirect()->to($previous);
+})->name('lang.switch');

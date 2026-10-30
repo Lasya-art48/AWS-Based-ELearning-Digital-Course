@@ -1,0 +1,116 @@
+<?php
+
+namespace Mindigo\ExamManagement\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Mindigo\Auth\Models\User;
+
+class ExamSessionAttempt extends Model
+{
+    public const GRADING_AUTO_GRADED = 'auto_graded';
+
+    public const GRADING_PENDING_MANUAL = 'pending_manual';
+
+    public const GRADING_COMPLETED = 'completed';
+
+    public const GRADING_RELEASED = 'released';
+
+    public const STATUS_IN_PROGRESS = 'in_progress';
+
+    public const STATUS_SUBMITTED = 'submitted';
+
+    public const STATUS_EXPIRED = 'expired';
+
+    public const STATUS_TERMINATED = 'terminated';
+
+    public const STATUS_PAUSED = 'paused';
+
+    public const STATUSES = [self::STATUS_IN_PROGRESS, self::STATUS_SUBMITTED, self::STATUS_EXPIRED, self::STATUS_TERMINATED, self::STATUS_PAUSED];
+
+    protected $guarded = ['id'];
+
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'datetime',
+            'expires_at' => 'datetime',
+            'last_activity_at' => 'datetime',
+            'paused_at' => 'datetime',
+            'submitted_at' => 'datetime',
+            'question_order' => 'array',
+            'answer_order' => 'array',
+            'security_events' => 'array',
+            'score' => 'decimal:2',
+            'max_score' => 'decimal:2',
+            'percentage' => 'decimal:2',
+            'passed' => 'boolean',
+            'needs_review' => 'boolean',
+            'reviewed_at' => 'datetime',
+            'released_at' => 'datetime',
+            'risk_score' => 'integer',
+            'camera_consent_at' => 'datetime',
+            'camera_consent_declined_at' => 'datetime',
+            'terminated_at' => 'datetime',
+            'latest_warning_at' => 'datetime',
+            'pause_remaining_seconds' => 'integer',
+            'added_time_minutes' => 'integer',
+        ];
+    }
+
+    public function session(): BelongsTo
+    {
+        return $this->belongsTo(ExamSession::class, 'exam_session_id');
+    }
+
+    public function candidate(): BelongsTo
+    {
+        return $this->belongsTo(ExamCandidate::class, 'exam_candidate_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function answers(): HasMany
+    {
+        return $this->hasMany(ExamSessionAttemptAnswer::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function releaser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'released_by');
+    }
+
+    public function proctorEvents(): HasMany
+    {
+        return $this->hasMany(ExamProctorEvent::class);
+    }
+
+    public function terminator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'terminated_by');
+    }
+
+    public function pausedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'paused_by');
+    }
+
+    public function appeals(): HasMany
+    {
+        return $this->hasMany(ExamGradeAppeal::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === self::STATUS_IN_PROGRESS && $this->expires_at->isFuture();
+    }
+}

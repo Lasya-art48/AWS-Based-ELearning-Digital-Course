@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'update_created' => '“:session” has been scheduled',
+    'update_rescheduled' => '“:session” has been rescheduled',
+    'update_cancelled' => '“:session” has been cancelled',
+    'update_updated' => '“:session” has new information',
+    'reminder_24h' => 'In 24 hours: :event',
+    'reminder_60m' => 'Starting in one hour: :event',
+    'reminder_15m' => 'Starting in 15 minutes: :event',
+    'exceptions_title' => 'Academic closures',
+    'exceptions_subtitle' => 'Manage no-class dates across the platform and individual courses.',
+    'create_exception' => 'Add closure',
+    'scope' => 'Scope',
+    'scope_global' => 'Entire system',
+    'scope_course' => 'Specific course',
+    'course' => 'Course',
+    'all_scopes' => 'All scopes',
+    'all_courses' => 'All courses',
+    'date' => 'No-class date',
+    'from' => 'From date', 'to' => 'To date', 'title' => 'Title', 'reason' => 'Reason',
+    'filter' => 'Filter', 'clear' => 'Clear', 'save' => 'Save closure', 'delete' => 'Delete',
+    'delete_confirm' => 'Delete this no-class date?',
+    'empty' => 'No academic closures match the current filters.',
+    'created_by' => 'Created by',
+    'exception_saved' => 'The academic closure has been saved.',
+    'exception_deleted' => 'The academic closure has been deleted.',
+];

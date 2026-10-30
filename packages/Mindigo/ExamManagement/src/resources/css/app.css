@@ -1,0 +1,795 @@
+@import "tailwindcss";
+
+@source "../../../../Dashboard/src/resources/views/**/*.blade.php";
+@source "../views/**/*.blade.php";
+@source "../js/**/*.js";
+
+@layer components {
+    .exam-foundation-shell {
+        @apply min-h-screen bg-slate-50 px-4 py-5 sm:px-6 lg:px-8;
+    }
+
+    .exam-foundation-container {
+        @apply mx-auto flex w-full max-w-[1500px] flex-col gap-6;
+    }
+
+    .exam-page-header {
+        @apply flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:flex-row lg:items-center lg:justify-between;
+    }
+
+    .exam-eyebrow {
+        @apply text-[11px] font-black uppercase tracking-[0.16em] text-green-700;
+    }
+
+    .exam-page-title {
+        @apply mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl;
+    }
+
+    .exam-page-description {
+        @apply mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-500;
+    }
+
+    .exam-actions {
+        @apply flex flex-wrap items-center gap-2;
+    }
+
+    .exam-button {
+        @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-black no-underline transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .exam-button-primary {
+        @apply bg-green-600 text-white shadow-sm shadow-green-200 hover:bg-green-700 focus:ring-green-100;
+    }
+
+    .exam-button-secondary {
+        @apply border border-slate-200 bg-white text-slate-700 hover:border-green-300 hover:bg-green-50 hover:text-green-700 focus:ring-slate-100;
+    }
+
+    .exam-button-danger {
+        @apply bg-rose-50 text-rose-700 hover:bg-rose-100 focus:ring-rose-100;
+    }
+
+    .exam-button-ghost {
+        @apply text-slate-600 hover:bg-slate-100 hover:text-slate-950 focus:ring-slate-100;
+    }
+
+    .exam-foundation-stat-grid {
+        @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+    }
+
+    .exam-foundation-stat-card {
+        @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm;
+    }
+
+    .exam-stat-label {
+        @apply text-xs font-black uppercase tracking-wide text-slate-400;
+    }
+
+    .exam-stat-value {
+        @apply mt-2 block text-3xl font-black tracking-tight text-slate-950;
+    }
+
+    .exam-stat-icon {
+        @apply grid h-10 w-10 place-items-center rounded-xl bg-green-50 text-green-700;
+    }
+
+    .exam-stat-hint {
+        @apply mt-3 text-xs font-semibold text-slate-500;
+    }
+
+    .exam-panel {
+        @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .exam-panel-header {
+        @apply flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between;
+    }
+
+    .exam-panel-title {
+        @apply text-base font-black text-slate-950;
+    }
+
+    .exam-panel-description {
+        @apply mt-1 text-xs font-semibold leading-5 text-slate-400;
+    }
+
+    .exam-panel-body {
+        @apply p-5;
+    }
+
+    .exam-status {
+        @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-black;
+    }
+
+    .exam-status-dot {
+        @apply h-1.5 w-1.5 rounded-full bg-current;
+    }
+
+    .exam-status[data-tone="success"] { @apply border-green-200 bg-green-50 text-green-700; }
+    .exam-status[data-tone="info"] { @apply border-blue-200 bg-blue-50 text-blue-700; }
+    .exam-status[data-tone="warning"] { @apply border-amber-200 bg-amber-50 text-amber-700; }
+    .exam-status[data-tone="danger"] { @apply border-rose-200 bg-rose-50 text-rose-700; }
+    .exam-status[data-tone="neutral"] { @apply border-slate-200 bg-slate-100 text-slate-600; }
+    .exam-status[data-tone="draft"] { @apply border-violet-200 bg-violet-50 text-violet-700; }
+
+    .exam-empty-state {
+        @apply flex min-h-64 flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-6 py-12 text-center;
+    }
+
+    .exam-empty-icon {
+        @apply grid h-14 w-14 place-items-center rounded-2xl bg-green-100 text-green-700;
+    }
+
+    .exam-empty-title { @apply text-base font-black text-slate-900; }
+    .exam-empty-description { @apply mt-1 max-w-md text-sm font-semibold leading-6 text-slate-500; }
+
+    .exam-stepper {
+        @apply grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:grid-cols-3 lg:grid-cols-6;
+    }
+
+    .exam-step {
+        @apply flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold text-slate-400;
+    }
+
+    .exam-step-number {
+        @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100 text-[11px] font-black text-slate-500;
+    }
+
+    .exam-step[data-state="current"] { @apply bg-green-50 text-green-800; }
+    .exam-step[data-state="current"] .exam-step-number { @apply bg-green-600 text-white; }
+    .exam-step[data-state="complete"] { @apply text-green-700; }
+    .exam-step[data-state="complete"] .exam-step-number { @apply bg-green-100 text-green-700; }
+
+    .exam-page {
+        @apply w-full px-5 pb-10 pt-2 max-md:px-4;
+    }
+
+    .exam-hero,
+    .exam-card,
+    .exam-stat-card,
+    .exam-builder-card,
+    .exam-filter {
+        @apply rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70;
+    }
+
+    .exam-hero {
+        @apply flex flex-col gap-5 p-6 lg:flex-row lg:items-center lg:justify-between;
+    }
+
+    .exam-hero h1 {
+        @apply mt-2 text-3xl font-black tracking-normal text-slate-950;
+    }
+
+    .exam-hero p {
+        @apply mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-500;
+    }
+
+    .exam-breadcrumb {
+        @apply flex flex-wrap items-center gap-2 text-xs font-black text-slate-400;
+    }
+
+    .exam-breadcrumb a {
+        @apply text-slate-500 no-underline hover:text-green-700;
+    }
+
+    .exam-primary-button,
+    .exam-secondary-button,
+    .exam-danger-button,
+    .exam-filter-button {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black no-underline transition;
+    }
+
+    .exam-primary-button,
+    .exam-filter-button {
+        @apply bg-green-600 text-white shadow-sm shadow-green-200 hover:bg-green-500;
+    }
+
+    .exam-secondary-button {
+        @apply border border-slate-200 bg-slate-50 text-slate-700 hover:bg-white hover:text-green-700;
+    }
+
+    .exam-danger-button {
+        @apply bg-rose-50 text-rose-700 hover:bg-rose-100;
+    }
+
+    .exam-stat-card {
+        @apply p-5;
+    }
+
+    .exam-stat-card span {
+        @apply block text-xs font-black uppercase tracking-normal text-slate-400;
+    }
+
+    .exam-stat-card strong {
+        @apply mt-2 block text-3xl font-black text-slate-950;
+    }
+
+    .exam-filter {
+        @apply grid gap-3 p-4 lg:grid-cols-[1.4fr_1fr_0.9fr_auto_auto];
+    }
+
+    .exam-input,
+    .exam-select,
+    .exam-textarea {
+        @apply w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-green-300 focus:ring-4 focus:ring-green-100;
+    }
+
+    .exam-input,
+    .exam-select {
+        @apply min-h-12;
+    }
+
+    .exam-textarea {
+        @apply min-h-32 py-4 leading-6;
+    }
+
+    .exam-table {
+        @apply w-full min-w-[760px] border-collapse;
+    }
+
+    .exam-table th {
+        @apply bg-slate-50 px-5 py-4 text-left text-xs font-black uppercase tracking-normal text-slate-400;
+    }
+
+    .exam-table td {
+        @apply border-t border-slate-100 px-5 py-4;
+    }
+
+    .exam-badge {
+        @apply inline-flex min-h-7 items-center rounded-full px-3 text-xs font-black;
+    }
+
+    .exam-status-draft,
+    .exam-status-reviewing {
+        @apply bg-amber-50 text-amber-700;
+    }
+
+    .exam-status-published {
+        @apply bg-green-50 text-green-700;
+    }
+
+    .exam-status-closed {
+        @apply bg-slate-100 text-slate-600;
+    }
+
+    .exam-type {
+        @apply bg-sky-50 text-sky-700;
+    }
+
+    .exam-card-head {
+        @apply flex flex-col gap-1 border-b border-slate-100 p-5;
+    }
+
+    .exam-card-head h2 {
+        @apply text-lg font-black text-slate-950;
+    }
+
+    .exam-card-head p {
+        @apply text-sm font-semibold text-slate-400;
+    }
+
+    .exam-builder-card {
+        @apply p-5;
+    }
+
+    .exam-section-head {
+        @apply flex items-start gap-3;
+    }
+
+    .exam-section-head > span {
+        @apply grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-green-50 text-sm font-black text-green-700;
+    }
+
+    .exam-section-head h2 {
+        @apply text-lg font-black text-slate-950;
+    }
+
+    .exam-section-head p {
+        @apply mt-1 text-sm font-semibold text-slate-400;
+    }
+
+    .exam-form-grid {
+        @apply grid gap-4 md:grid-cols-2;
+    }
+
+    .exam-studio {
+        @apply flex flex-col rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50;
+    }
+
+    .exam-wizard-header {
+        @apply flex flex-col gap-4 border-b border-slate-100 px-5 py-4 md:flex-row md:items-center md:justify-between;
+    }
+
+    .exam-wizard-header h2 {
+        @apply text-lg font-black text-slate-950;
+    }
+
+    .exam-wizard-header p:not(.exam-studio-label) {
+        @apply mt-1 text-xs font-semibold text-slate-500;
+    }
+
+    .exam-wizard-progress {
+        @apply h-2 w-full max-w-64 overflow-hidden rounded-full bg-slate-100;
+    }
+
+    .exam-wizard-progress span {
+        @apply block h-full rounded-full bg-green-600 transition-all duration-300;
+    }
+
+    .exam-upload-button {
+        @apply flex min-h-14 items-center gap-3 rounded-2xl border-2 border-dashed border-green-300 bg-green-50 px-5 text-left text-sm font-black text-green-700 transition hover:bg-green-100;
+    }
+
+    .exam-review-button,
+    .exam-save-chip {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-black transition focus:outline-none focus:ring-4;
+    }
+
+    .exam-save-chip {
+        @apply bg-green-600 text-white shadow-sm hover:bg-green-700 focus:ring-green-100;
+    }
+
+    .exam-review-button {
+        @apply border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-green-300 hover:bg-green-50 hover:text-green-700 focus:ring-slate-100;
+    }
+
+    .exam-return-button {
+        @apply inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 text-xs font-black text-red-400 no-underline transition hover:bg-red-100;
+    }
+
+    .exam-studio-layout {
+        @apply grid gap-5 bg-white p-5 xl:grid-cols-[14rem_minmax(0,1fr)] xl:items-start;
+    }
+
+    .exam-studio-footer {
+        @apply flex items-center gap-3 border-t border-slate-100 bg-white p-4;
+    }
+
+    .exam-studio-submit-actions {
+        @apply flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-end;
+    }
+
+    .exam-studio-sidebar {
+        @apply flex flex-col gap-5;
+    }
+
+    .exam-question-index-section {
+        @apply flex flex-col;
+    }
+
+    .exam-studio-label {
+        @apply mb-2 text-[11px] font-black uppercase tracking-wide text-slate-400;
+    }
+
+    .exam-part-list {
+        @apply flex flex-col gap-2;
+    }
+
+    .exam-part-item {
+        @apply rounded-xl bg-slate-100 px-3 py-2 text-center text-xs font-black text-slate-500 no-underline transition hover:bg-green-50 hover:text-green-700;
+    }
+
+    .exam-part-item.is-active {
+        @apply bg-green-600 text-white shadow-[0_3px_0_#15803d,0_8px_16px_rgba(22,163,74,0.24)];
+    }
+
+    .exam-question-index {
+        @apply grid max-h-72 content-start grid-cols-5 gap-2 overflow-y-auto overscroll-contain pr-1;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .exam-question-index::-webkit-scrollbar {
+        display: none;
+    }
+
+    .exam-question-index button {
+        @apply grid h-8 place-items-center rounded-lg border border-slate-200 bg-white text-xs font-black text-slate-500 transition hover:border-green-300 hover:bg-green-50 hover:text-green-700;
+    }
+
+    .exam-question-index button.is-filled,
+    .exam-question-index button.is-active {
+        @apply border-green-600 bg-green-600 text-white shadow-[0_2px_0_#15803d];
+    }
+
+    .exam-question-index-empty { @apply text-xs font-semibold text-slate-400; }
+    .exam-validation-summary { @apply mx-5 mt-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800; }
+    .exam-validation-summary ul { @apply mt-2 list-disc space-y-1 pl-5 text-xs; }
+    .exam-question-preview { @apply rounded-2xl border border-slate-200 bg-slate-50 p-4; }
+    .exam-question-preview h3 { @apply text-sm font-black text-slate-800; }
+    .exam-question-preview > p { @apply mt-2 text-xs font-semibold text-slate-500; }
+    .exam-question-preview > p[data-state="error"] { @apply text-rose-700; }
+    .exam-question-preview > p[data-state="ready"] { @apply text-green-700; }
+    .exam-question-preview > p[data-state="loading"] { @apply text-slate-500; }
+    .exam-question-preview > p[data-state="loading"]::before {
+        content: "";
+        display: inline-block;
+        width: 0.75rem;
+        height: 0.75rem;
+        margin-right: 0.5rem;
+        border: 2px solid #cbd5e1;
+        border-top-color: #16a34a;
+        border-radius: 9999px;
+        animation: exam-question-loading 0.7s linear infinite;
+        vertical-align: -0.125rem;
+    }
+    @keyframes exam-question-loading { to { transform: rotate(360deg); } }
+    .exam-question-preview-hint { @apply text-[11px] text-slate-400; }
+    .exam-question-preview [data-exam-preview-questions] { @apply mt-3 grid gap-2; }
+    .exam-question-preview article { @apply scroll-mt-24 rounded-xl border border-green-100 bg-white p-3; }
+    .exam-question-preview article strong { @apply text-xs font-black text-green-700; }
+    .exam-question-preview article p { @apply mt-2 whitespace-pre-wrap break-words text-sm font-medium leading-6 text-slate-700; }
+    .exam-review-questions { @apply grid max-h-72 gap-2 overflow-y-auto; }
+    .exam-review-questions article { @apply rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs font-medium leading-5 text-slate-700; }
+
+    .exam-progress-card {
+        @apply rounded-2xl border border-green-100 bg-green-50 p-4 text-xs font-black text-green-700;
+    }
+
+    .exam-progress-card span {
+        @apply text-green-500;
+    }
+
+    .exam-progress-card p {
+        @apply mt-2 text-[11px] text-green-600;
+    }
+
+    .exam-progress-track {
+        @apply mt-3 h-2 overflow-hidden rounded-full bg-green-100;
+    }
+
+    .exam-progress-track span {
+        @apply block h-full rounded-full bg-green-500;
+    }
+
+    .exam-studio-main {
+        @apply min-h-0 min-w-0 overflow-y-auto overscroll-contain pr-1;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .exam-studio-main::-webkit-scrollbar {
+        display: none;
+    }
+
+    .exam-required {
+        @apply ml-0.5 text-base font-black text-rose-600;
+    }
+
+    .exam-studio-main > [data-exam-part] {
+        @apply hidden;
+    }
+
+    .exam-studio-main > [data-exam-part].is-active {
+        @apply block;
+    }
+
+    .exam-panel-card {
+        @apply rounded-2xl border-green-100 shadow-[0_2px_14px_rgba(22,163,74,0.08)];
+    }
+
+    .exam-panel-card.is-highlight {
+        @apply bg-white;
+    }
+
+    .exam-builder-toolbar {
+        @apply relative z-20 grid gap-3 lg:grid-cols-2;
+    }
+
+    .exam-compact-picker {
+        @apply relative min-w-0;
+    }
+
+    .exam-compact-label {
+        @apply mb-1.5 block text-[11px] font-black uppercase tracking-wide text-slate-400;
+    }
+
+    .exam-compact-trigger {
+        @apply flex min-h-14 w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-left transition hover:border-green-300 hover:shadow-sm;
+    }
+
+    .exam-compact-icon {
+        @apply grid h-9 w-9 shrink-0 place-items-center rounded-lg;
+    }
+
+    .exam-compact-trigger strong,
+    .exam-compact-trigger small,
+    .exam-compact-option strong,
+    .exam-compact-option small {
+        @apply block truncate;
+    }
+
+    .exam-compact-trigger strong,
+    .exam-compact-option strong {
+        @apply text-sm font-black text-slate-800;
+    }
+
+    .exam-compact-trigger small,
+    .exam-compact-option small {
+        @apply mt-0.5 text-xs font-semibold text-slate-400;
+    }
+
+    .exam-compact-menu {
+        @apply absolute inset-x-0 top-full z-50 mt-2 max-h-72 space-y-1 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-300/40;
+    }
+
+    .exam-compact-option {
+        @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left no-underline transition hover:bg-slate-50;
+    }
+
+    .exam-compact-option > span:nth-child(2) {
+        @apply min-w-0 flex-1;
+    }
+
+    .exam-compact-option > svg:last-child {
+        @apply invisible;
+    }
+
+    .exam-compact-option.is-active {
+        @apply bg-green-50;
+    }
+
+    .exam-compact-option.is-active > svg:last-child {
+        @apply visible;
+    }
+
+    .exam-structure-summary {
+        @apply grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 sm:grid-cols-3;
+    }
+
+    .exam-structure-summary > span {
+        @apply rounded-xl bg-slate-50 px-4 py-3;
+    }
+
+    .exam-structure-summary small,
+    .exam-structure-summary strong {
+        @apply block;
+    }
+
+    .exam-structure-summary small {
+        @apply text-[11px] font-black uppercase tracking-wide text-slate-400;
+    }
+
+    .exam-structure-summary strong {
+        @apply mt-1 text-lg font-black text-slate-900;
+    }
+
+    .exam-review-grid {
+        @apply grid gap-3 sm:grid-cols-2;
+    }
+
+    .exam-review-grid > div {
+        @apply rounded-2xl border border-slate-200 bg-slate-50 p-4;
+    }
+
+    .exam-review-grid span {
+        @apply block text-xs font-black uppercase tracking-wide text-slate-400;
+    }
+
+    .exam-review-grid strong {
+        @apply mt-2 block text-lg font-black text-slate-950;
+    }
+
+    .exam-subject-panel {
+        @apply absolute z-50 mt-1 w-full rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/80;
+    }
+
+    .exam-subject-search {
+        @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-green-400 focus:bg-white;
+    }
+
+    .exam-subject-option {
+        @apply cursor-pointer rounded-xl px-3 py-2 text-sm font-bold text-slate-700 transition hover:bg-green-50 hover:text-green-700;
+    }
+
+    .exam-subject-option.is-selected {
+        @apply bg-green-50 text-green-700;
+    }
+
+    .exam-subject-empty {
+        @apply px-3 py-2 text-sm font-semibold text-slate-400;
+    }
+
+    .exam-answer-pill {
+        @apply shrink-0 rounded-full border border-green-200 bg-green-100 px-2.5 py-1 text-[10px] font-black text-green-700;
+    }
+
+    .exam-field {
+        @apply flex flex-col gap-2 text-sm font-black text-slate-600;
+    }
+
+    .exam-field strong {
+        @apply text-xs font-bold text-rose-600;
+    }
+
+    .exam-toggle-grid {
+        @apply grid gap-3 md:grid-cols-3;
+    }
+
+    .exam-toggle {
+        @apply flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700;
+    }
+
+    .exam-toggle input {
+        @apply sr-only;
+    }
+
+    .exam-toggle span {
+        @apply relative h-6 w-11 rounded-full bg-slate-300 transition;
+    }
+
+    .exam-toggle span::after {
+        content: "";
+        @apply absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition;
+    }
+
+    .exam-toggle input:checked + span {
+        @apply bg-green-600;
+    }
+
+    .exam-toggle input:checked + span::after {
+        @apply translate-x-5;
+    }
+
+    .exam-type-grid {
+        @apply grid gap-4 md:grid-cols-2 2xl:grid-cols-5;
+    }
+
+    .exam-type-card {
+        @apply rounded-2xl border border-slate-200 bg-slate-50 p-4;
+    }
+
+    .exam-type-card strong {
+        @apply block min-h-10 text-sm font-black text-slate-900;
+    }
+
+    .exam-type-card label {
+        @apply mt-3 flex flex-col gap-2 text-xs font-black uppercase tracking-normal text-slate-400;
+    }
+
+    .exam-take-page {
+        @apply w-full px-5 pb-10 pt-2;
+    }
+
+    .exam-take-header {
+        @apply sticky top-0 z-20 mb-5 flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-sm shadow-slate-200/70 backdrop-blur;
+    }
+
+    .exam-take-header h1 {
+        @apply truncate text-2xl font-black text-slate-950;
+    }
+
+    .exam-take-header p {
+        @apply mt-1 text-sm font-bold text-slate-400;
+    }
+
+    .exam-timer {
+        @apply shrink-0 rounded-2xl bg-green-50 px-5 py-3 text-xl font-black text-green-700;
+    }
+
+    .exam-timer.is-danger {
+        @apply bg-rose-50 text-rose-700;
+    }
+
+    .exam-take-layout {
+        @apply grid gap-5 lg:grid-cols-[5rem_1fr];
+    }
+
+    .exam-question-nav {
+        @apply sticky top-28 hidden max-h-[calc(100vh-8rem)] flex-col gap-2 overflow-auto rounded-3xl border border-slate-200 bg-white p-3 shadow-sm lg:flex;
+    }
+
+    .exam-question-nav-item {
+        @apply grid h-11 w-11 place-items-center rounded-2xl bg-slate-50 text-sm font-black text-slate-600 no-underline hover:bg-green-50 hover:text-green-700;
+    }
+
+    .exam-answer-card {
+        @apply rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70;
+    }
+
+    .exam-answer-card h2 {
+        @apply mt-3 text-base font-black leading-7 text-slate-950;
+    }
+
+    .exam-point-pill {
+        @apply shrink-0 rounded-2xl bg-green-50 px-3 py-2 text-sm font-black text-green-700;
+    }
+
+    .exam-choice {
+        @apply flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-green-200 hover:bg-green-50;
+    }
+
+    .exam-choice input {
+        @apply sr-only;
+    }
+
+    .exam-choice span {
+        @apply grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 border-slate-300 bg-white;
+    }
+
+    .exam-choice span::after {
+        content: "";
+        @apply h-2.5 w-2.5 scale-0 rounded-full bg-green-600 transition;
+    }
+
+    .exam-choice input:checked + span {
+        @apply border-green-600;
+    }
+
+    .exam-choice input:checked + span::after {
+        @apply scale-100;
+    }
+
+    .exam-choice strong {
+        @apply text-sm font-bold leading-6 text-slate-800;
+    }
+
+    .exam-submit-bar {
+        @apply sticky bottom-4 flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-lg shadow-slate-200/80;
+    }
+
+    .exam-submit-bar span {
+        @apply text-sm font-bold text-slate-400;
+    }
+
+    .exam-result-answer {
+        @apply p-5;
+    }
+}
+
+@layer components {
+    .exam-dashboard-metrics { @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4; }
+    .exam-dashboard-metric { @apply min-h-40 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-200/60; }
+    .exam-dashboard-metric--score { @apply flex items-center justify-between gap-5; }
+    .exam-dashboard-metric p { @apply text-xs font-bold text-slate-500; }
+    .exam-dashboard-metric strong { @apply mt-2 block text-3xl font-black tracking-tight text-slate-950; }
+    .exam-dashboard-metric > div > span:not(.exam-dashboard-metric-icon) { @apply mt-2 block text-xs font-bold text-green-600; }
+    .exam-dashboard-metric-heading { @apply flex items-start justify-between gap-4; }
+    .exam-dashboard-metric-icon { @apply grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600; }
+    .exam-dashboard-metric-icon--amber { @apply bg-amber-50 text-amber-600; }
+    .exam-dashboard-metric-icon--teal { @apply bg-teal-50 text-teal-600; }
+    .exam-score-ring { --score: 0; @apply relative grid h-24 w-24 shrink-0 place-items-center rounded-full; background: conic-gradient(#16a34a calc(var(--score) * 1%), #14b8a6 calc(var(--score) * 1%), #e2e8f0 0); }
+    .exam-score-ring::before { content: ''; @apply absolute inset-2.5 rounded-full bg-white shadow-inner; }
+    .exam-score-ring span { @apply relative text-xl font-black text-slate-900; }
+    .exam-mini-bars, .exam-question-wave { @apply mt-5 flex h-12 items-end gap-2; }
+    .exam-mini-bars i { @apply min-h-2 flex-1 rounded-t-full bg-violet-400/80; }
+    .exam-mini-bars i:nth-child(3n) { @apply bg-violet-600; }
+    .exam-question-wave { @apply items-center justify-between; }
+    .exam-question-wave i { @apply w-1.5 rounded-full bg-teal-500/70; }
+    .exam-dashboard-card { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm; }
+    .exam-dashboard-card-header { @apply flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between; }
+    .exam-dashboard-card-header h2 { @apply text-base font-black text-slate-950; }
+    .exam-dashboard-card-header p { @apply mt-1 text-xs font-semibold text-slate-400; }
+    .exam-dashboard-period { @apply inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600; }
+    .exam-activity-chart { @apply relative h-72 px-5 pb-5 pt-8; }
+    .exam-chart-grid { @apply absolute inset-x-5 bottom-12 top-8 flex flex-col justify-between; }
+    .exam-chart-grid i { @apply block border-t border-dashed border-slate-200; }
+    .exam-chart-columns { @apply relative z-10 flex h-full items-end gap-2; }
+    .exam-chart-column { @apply flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2; }
+    .exam-chart-column > i { @apply w-full max-w-7 rounded-t-lg bg-gradient-to-t from-green-600 to-teal-300 transition hover:from-green-700 hover:to-teal-400; }
+    .exam-chart-column small { @apply text-[10px] font-bold text-slate-400; }
+    .exam-chart-value { @apply text-[10px] font-black text-slate-500; }
+    .exam-difficulty-summary { @apply space-y-6 p-5; }
+    .exam-difficulty-row { @apply space-y-2; }
+    .exam-difficulty-label { @apply flex items-center gap-2 text-xs font-bold text-slate-600; }
+    .exam-difficulty-label strong { @apply ml-auto text-slate-900; }
+    .exam-legend-dot { @apply h-2.5 w-2.5 rounded-full bg-green-500; }
+    .exam-legend-dot[data-tone="teal"] { @apply bg-teal-500; }
+    .exam-legend-dot[data-tone="amber"] { @apply bg-amber-500; }
+    .exam-difficulty-track { @apply h-3 overflow-hidden rounded-full bg-slate-100; }
+    .exam-difficulty-track i { @apply block h-full min-w-1 rounded-full bg-green-500; }
+    .exam-difficulty-track i[data-tone="teal"] { @apply bg-teal-500; }
+    .exam-difficulty-track i[data-tone="amber"] { @apply bg-amber-500; }
+    .exam-dashboard-insight { @apply mx-5 mb-5 flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3 text-xs font-bold text-green-700; }
+    .exam-dashboard-table { @apply w-full min-w-[850px] border-collapse; }
+    .exam-dashboard-table th { @apply bg-slate-50 px-5 py-3 text-left text-[11px] font-black uppercase text-slate-400; }
+    .exam-dashboard-table td { @apply border-t border-slate-100 px-5 py-4 text-sm font-semibold text-slate-500; }
+    .exam-learner { @apply flex items-center gap-3; }
+    .exam-learner > span { @apply grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-100 text-sm font-black text-green-700; }
+    .exam-learner strong, .exam-learner small { @apply block; }
+    .exam-learner strong { @apply text-sm font-black text-slate-900; }
+    .exam-learner small { @apply mt-0.5 text-[11px] font-semibold text-slate-400; }
+    .exam-score-pill { @apply inline-flex rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-600; }
+    .exam-score-pill[data-passed="true"] { @apply bg-green-50 text-green-700; }
+    .exam-row-action { @apply ml-auto inline-grid h-9 w-9 place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:border-green-300 hover:bg-green-50 hover:text-green-700; }
+}
